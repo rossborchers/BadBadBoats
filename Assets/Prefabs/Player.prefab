@@ -412,6 +412,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0d5528df00126d47807117984eb7efd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  TrailRenderers:
+  - {fileID: 8109760842441155369}
+  - {fileID: 169566204770515498}
   BoatMat: {fileID: 2100000, guid: dabcef7b7ad9d6449aed0a48e4fed864, type: 2}
   MonsterMat: {fileID: 2100000, guid: 08950f5987a683b4cba0aa0e3727b598, type: 2}
   KeyCode: 306

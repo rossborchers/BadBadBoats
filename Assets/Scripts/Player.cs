@@ -5,6 +5,8 @@ using UnityEngine;
 [RequireComponent(typeof(RotateControl))]
 public class Player : MonoBehaviour
 {
+    public List<TrailRenderer> TrailRenderers;
+
     public Material BoatMat;
     public Material MonsterMat;
 
@@ -88,6 +90,16 @@ public class Player : MonoBehaviour
         }
     }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        WhirlPool pool = other.GetComponent<WhirlPool>();
+        if (pool != null)
+        {       
+           transform.position = pool.GetLinkPosition();
+            ResetTrail();
+        }
+    }
+
     public void ClearPoint()
     {
         if(_point != null)
@@ -120,11 +132,29 @@ public class Player : MonoBehaviour
         {
             BecomeMonster();
         }
+
+
+        //Try wrap
+        Vector3 wrappedPos = transform.position;
+        if (LevelBounds.Hit(ref wrappedPos))
+        {
+            transform.position = wrappedPos;
+            ResetTrail();
+        }
     }
 
     public void Respawn()
     {
         transform.position = GameManager.Instance.GetRespawnPoint();
+        ResetTrail();
         GameManager.Instance.IncreaseSpeed();
+    }
+
+    private void ResetTrail()
+    {
+        foreach (TrailRenderer renderer in TrailRenderers)
+        {
+            renderer.Clear();
+        }
     }
 }
