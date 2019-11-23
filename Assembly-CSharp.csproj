@@ -74,6 +74,7 @@
     <Compile Include="Assets\Scripts\Score.cs" />
     <Compile Include="Assets\Scripts\Spout.cs" />
     <Compile Include="Assets\Scripts\WhirlPool.cs" />
+    <Compile Include="Assets\Wake.cs" />
     <Compile Include="Assets\watermovement.cs" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Surface-Mobile.shader" />
     <None Include="Assets\TextMesh Pro\Resources\LineBreaking Leading Characters.txt" />

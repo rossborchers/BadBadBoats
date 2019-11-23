@@ -5,7 +5,7 @@ using UnityEngine;
 [RequireComponent(typeof(RotateControl))]
 public class Player : MonoBehaviour
 {
-	public List<TrailRenderer> TrailRenderers;
+	public List<Wake> Trails;
 
 	public int playerID;
 
@@ -83,12 +83,17 @@ public class Player : MonoBehaviour
 		if(!Ghost)
 		{
 			BuildGhosts();
+
+			foreach (Wake wake in Trails)
+			{
+				wake.SetLocalOffset(transform);
+			}
 		}
 		else
 		{
-			foreach(TrailRenderer trail in TrailRenderers)
+			foreach(Wake wake in Trails)
 			{
-				trail.enabled = false;
+				wake.gameObject.SetActive(false);
 			}
 		}
 	}
@@ -135,7 +140,6 @@ public class Player : MonoBehaviour
 
 		GhostBottomLeft.transform.position = transform.position + new Vector3(-x, 0, -y);
 		GhostBottomRight.transform.position = transform.position + new Vector3(x, 0, -y);
-
 
 		GhostTop.transform.rotation = transform.rotation;
 		GhostBottom.transform.rotation = transform.rotation;
@@ -240,15 +244,17 @@ public class Player : MonoBehaviour
     }
 	private void OnTriggerEnter(Collider other)
 	{
-		WhirlPool pool = other.GetComponent<WhirlPool>();
+		/*WhirlPool pool = other.GetComponent<WhirlPool>();
 		if (pool != null)
 		{
+			BreakTrail();
 			transform.position = pool.GetLinkPosition();
-			ResetTrail();
-		}
+			RestartTrails();
+
+		}*/
 
 		BoatTrail boatTrail = other.GetComponent<BoatTrail>();
-		if(boatTrail != null && boatTrail.PlayerId != playerID)
+		if(_control != null && boatTrail != null && boatTrail.PlayerId != playerID)
 		{
 			if(isMonster)
 			{
@@ -306,8 +312,9 @@ public class Player : MonoBehaviour
 		if (LevelBounds.Hit(ref wrappedPos))
 		{
 			Lightning.Instance.Strike();
+		
 			transform.position = wrappedPos;
-			ResetTrail();
+			BreakTrail();
 		}
 
 		if(Time.time - _lastBoatTrailSpawn > BoatTrailParticleSpawnInterval)
@@ -330,7 +337,12 @@ public class Player : MonoBehaviour
 
 	private void LateUpdate()
 	{
-		if(!Ghost)CopyGhosts();
+		foreach (Wake wake in Trails)
+		{
+			wake.Refresh(transform);
+		}
+
+		if (!Ghost)CopyGhosts();
 	}
 
 	public void Respawn()
@@ -340,17 +352,23 @@ public class Player : MonoBehaviour
 		instnace.transform.position = transform.position;
 
 		Lightning.Instance.Strike();
+
 		transform.position = GameManager.Instance.GetRespawnPoint();
-		ResetTrail();
-		
+		BreakTrail();
+
 		GameManager.Instance.IncreaseSpeed();
     }
 
-	private void ResetTrail()
+	private void BreakTrail()
 	{
-		foreach (TrailRenderer renderer in TrailRenderers)
+		List<Wake> newWakes = new List<Wake>();
+		for(int i = 0; i < Trails.Count; i++)
 		{
-			renderer.Clear();
+			Wake newWake = Instantiate(Trails[i].gameObject).GetComponent<Wake>();
+			newWake.transform.position = Trails[i].transform.position;
+			newWake.Offset = Trails[i].Offset;
+			newWakes.Add(newWake);
 		}
+		Trails = newWakes;
 	}
 }
