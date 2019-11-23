@@ -64,6 +64,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\BoatTrail.cs" />
+    <Compile Include="Assets\BrokenBoat.cs" />
     <Compile Include="Assets\Lightning.cs" />
     <Compile Include="Assets\Scripts\GameManager.cs" />
     <Compile Include="Assets\Scripts\LevelBounds.cs" />

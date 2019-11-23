@@ -32,6 +32,28 @@ public class Player : MonoBehaviour
 	public float PlayerTrailBoost;
 	public float PlayerMonsterBoost;
 
+	public BrokenBoat BrokenBoatPrefab;
+
+	private Player GhostTop;
+	private Player GhostBottom;
+	private Player GhostLeft;
+	private Player GhostRight;
+
+	private Player GhostTopLeft;
+	private Player GhostTopRight;
+
+	private Player GhostBottomLeft;
+	private Player GhostBottomRight;
+
+	private List<Player> Ghosts = new List<Player>();
+
+
+	private bool Ghost
+	{
+		get;
+		set;
+	}
+
     public RotateControl Control
     {
         get
@@ -53,11 +75,87 @@ public class Player : MonoBehaviour
     private void Awake()
     {
         monster.SetActive(false);
-        SetMaterials(boatMainMats[playerID], boatBitsMats[playerID]);
+        SetMaterials(boatMainMats[playerID], boatBitsMats[playerID]);	
     }
+
+	private void Start()
+	{
+		if(!Ghost)
+		{
+			BuildGhosts();
+		}
+		else
+		{
+			foreach(TrailRenderer trail in TrailRenderers)
+			{
+				trail.enabled = false;
+			}
+		}
+	}
+
+	private void BuildGhosts()
+	{
+		GhostTop = Instantiate(gameObject).GetComponent<Player>();
+		GhostBottom = Instantiate(gameObject).GetComponent<Player>();
+		GhostLeft = Instantiate(gameObject).GetComponent<Player>();
+		GhostRight = Instantiate(gameObject).GetComponent<Player>();
+
+		GhostTopLeft = Instantiate(gameObject).GetComponent<Player>();
+		GhostTopRight = Instantiate(gameObject).GetComponent<Player>();
+
+		GhostBottomLeft = Instantiate(gameObject).GetComponent<Player>();
+		GhostBottomRight = Instantiate(gameObject).GetComponent<Player>();
+
+		GhostTop.Ghost = true; 
+		GhostBottom.Ghost = true;
+		GhostLeft.Ghost = true;
+		GhostRight.Ghost = true;
+
+		GhostTopLeft.Ghost = true;
+		GhostTopRight.Ghost = true;
+
+		GhostBottomLeft.Ghost = true;
+		GhostBottomRight.Ghost = true;
+
+		Ghosts = new List<Player>() { GhostTop, GhostBottom, GhostLeft, GhostRight, GhostTopLeft, GhostTopRight, GhostBottomLeft, GhostBottomRight };
+	}
+
+	private void CopyGhosts()
+	{
+		float x = LevelBounds.Instance.RectSize.x * 2;
+		float y = LevelBounds.Instance.RectSize.y * 2;
+
+		GhostTop.transform.position = transform.position + new Vector3(0, 0, y);
+		GhostBottom.transform.position = transform.position + new Vector3(0, 0, -y);
+		GhostLeft.transform.position = transform.position + new Vector3(x, 0, 0);
+		GhostRight.transform.position = transform.position + new Vector3(-x, 0, 0);
+
+		GhostTopLeft.transform.position = transform.position + new Vector3(-x, 0, y);
+		GhostTopRight.transform.position = transform.position + new Vector3(x, 0, y);
+
+		GhostBottomLeft.transform.position = transform.position + new Vector3(-x, 0, -y);
+		GhostBottomRight.transform.position = transform.position + new Vector3(x, 0, -y);
+
+
+		GhostTop.transform.rotation = transform.rotation;
+		GhostBottom.transform.rotation = transform.rotation;
+		GhostLeft.transform.rotation = transform.rotation;
+		GhostRight.transform.rotation = transform.rotation;
+
+		GhostTopLeft.transform.rotation = transform.rotation;
+		GhostTopRight.transform.rotation = transform.rotation;
+
+		GhostBottomLeft.transform.rotation = transform.rotation;
+		GhostBottomRight.transform.rotation = transform.rotation;
+	}
 
     private void BecomeMonster()
     {
+		foreach (Player ghost in Ghosts)
+		{
+			ghost.BecomeMonster();
+		}
+
 		isMonster = true;
 		foreach(GameObject oar in oars)
 		{
@@ -69,6 +167,11 @@ public class Player : MonoBehaviour
 
     private void BecomeBoat()
     {
+		foreach(Player ghost in Ghosts)
+		{
+			ghost.BecomeBoat();
+		}
+
 		isMonster = false;
 		foreach (GameObject oar in oars)
 		{
@@ -122,7 +225,7 @@ public class Player : MonoBehaviour
 
                 if (_point == null)
                 {
-                    Control.ChangeDirection();
+                    //Control.ChangeDirection();
                 }
                 else
                 {
@@ -131,7 +234,7 @@ public class Player : MonoBehaviour
             }
             else
             {
-                Control.ChangeDirection();
+               // Control.ChangeDirection();
             }    
         }
     }
@@ -178,6 +281,11 @@ public class Player : MonoBehaviour
 
     void Update()
     {
+		if(Ghost)
+		{
+			return;
+		}
+
         if (Input.GetKeyDown(KeyCode))
         {
             Control.Rotate = !Control.Rotate;
@@ -185,7 +293,8 @@ public class Player : MonoBehaviour
 
         if(_point == null)
         {
-            BecomeBoat();       
+            BecomeBoat();  
+			
         }
         else
         {
@@ -196,6 +305,7 @@ public class Player : MonoBehaviour
 		Vector3 wrappedPos = transform.position;
 		if (LevelBounds.Hit(ref wrappedPos))
 		{
+			Lightning.Instance.Strike();
 			transform.position = wrappedPos;
 			ResetTrail();
 		}
@@ -216,11 +326,19 @@ public class Player : MonoBehaviour
 		{
 			Control.TrailBoost = Mathf.Max(0, Control.TrailBoost - Time.deltaTime * Control.TrailBoostDecrese);
 		}
-
 	}
 
-    public void Respawn()
+	private void LateUpdate()
+	{
+		if(!Ghost)CopyGhosts();
+	}
+
+	public void Respawn()
     {
+		GameObject instnace = Instantiate(BrokenBoatPrefab.gameObject);
+		instnace.GetComponent<BrokenBoat>().PlayerId = playerID;
+		instnace.transform.position = transform.position;
+
 		Lightning.Instance.Strike();
 		transform.position = GameManager.Instance.GetRespawnPoint();
 		ResetTrail();

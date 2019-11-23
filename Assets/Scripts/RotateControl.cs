@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class RotateControl : MonoBehaviour
 {
+	public Rigidbody Rigidbody;
+
     public Transform rotate1;
     public Transform rotate2;
 
@@ -61,16 +63,19 @@ public class RotateControl : MonoBehaviour
         direction *= -1;
     }
 
-    void Update()
+    void FixedUpdate()
     {
         if(Rotate)
         {
-            transform.RotateAround(rotate1.position, Vector3.up, direction * (Speed + Boost + TrailBoost + GotPointBoost) * Time.deltaTime);
-        }
+			// transform.RotateAround(rotate1.position, Vector3.up, direction * (Speed + Boost + TrailBoost + GotPointBoost) * Time.deltaTime);
+			RotateRigidBodyAroundPointBy(Rigidbody, rotate1.position, Vector3.up , direction * (Speed + Boost + TrailBoost + GotPointBoost) * Time.fixedDeltaTime);
+
+		}
         else
         {
-            transform.RotateAround(rotate2.position, Vector3.up, direction  * -(Speed + Boost + TrailBoost + GotPointBoost) * Time.deltaTime);
-        }
+			//transform.RotateAround(rotate2.position, Vector3.up, direction  * -(Speed + Boost + TrailBoost + GotPointBoost) * Time.deltaTime);
+			RotateRigidBodyAroundPointBy(Rigidbody, rotate2.position, Vector3.up, direction * -(Speed + Boost + TrailBoost + GotPointBoost) * Time.fixedDeltaTime);
+		}
 
 		 float finalDir = ((!Rotate) ? -1 * direction : direction);
 		if (finalDir > 0)
@@ -93,10 +98,16 @@ public class RotateControl : MonoBehaviour
 			}
 		}
 
-		GotPointBoost = Mathf.Max(0, GotPointBoost - Time.deltaTime * GotPointDecrease);
-		if(GotPointBoost > 0)
-		{
-			Debug.Log(GotPointBoost);
-		}
+		GotPointBoost = Mathf.Max(0, GotPointBoost - Time.fixedDeltaTime * GotPointDecrease);
+		Rigidbody.angularVelocity = Vector3.zero;
+		Rigidbody.velocity = Vector3.zero;
+	}
+
+	//https://answers.unity.com/questions/10093/rigidbody-rotating-around-a-point-instead-on-self.html
+	public void RotateRigidBodyAroundPointBy(Rigidbody rb, Vector3 origin, Vector3 axis, float angle)
+	{
+		Quaternion rotation = Quaternion.AngleAxis(angle, axis);
+		rb.MovePosition(rotation * (rb.transform.position - origin) + origin);
+		rb.MoveRotation(rb.transform.rotation * rotation);
 	}
 }

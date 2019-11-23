@@ -15,7 +15,6 @@ public class GameManager : MonoBehaviour
     public Transform PlayerScoreRoot;
 
     private int _pointRespawnIndex;
-    public Transform[] PointSpawns;
 
     public Player[] Players;
     private List<Score> ScoreInstances;
@@ -33,6 +32,8 @@ public class GameManager : MonoBehaviour
 
     public int MaxScore = 10;
 
+	public float PointSpawnDelay = 5;
+	private float LastSpawnTime = 0;
     private void Awake()
     {
         Instance = this;
@@ -124,7 +125,7 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        if(points < 2)
+        if(points < 1 && Time.time - LastSpawnTime > PointSpawnDelay)
         {
             SpawnNewPoint();
         }
@@ -155,12 +156,14 @@ public class GameManager : MonoBehaviour
         //Create new point
         GameObject point = Instantiate(PointPrefab);
 
-        if (_pointRespawnIndex >= Respawns.Length)
+        if (_pointRespawnIndex >= PointRespawns.Length)
         {
             _pointRespawnIndex = 0;
         }
 
         point.transform.position = PointRespawns[_pointRespawnIndex].position;
         _pointRespawnIndex++;
-    }
+
+		LastSpawnTime = Time.time;
+	}
 }

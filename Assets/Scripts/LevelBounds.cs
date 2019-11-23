@@ -7,41 +7,43 @@ public class LevelBounds : MonoBehaviour
 {
     public Vector2 RectSize;
 
-    private static LevelBounds _instance;
+    public static LevelBounds Instance;
+
+	public float Offset = 0.01f;
 
     public static bool Hit(ref Vector3 position)
     {
-        if(_instance == null)
+        if(Instance == null)
         {
-            //yolo
-            _instance = FindObjectOfType<LevelBounds>();
+			//yolo
+			Instance = FindObjectOfType<LevelBounds>();
         }
 
-        Vector3 localPos = position - _instance.transform.position;
+        Vector3 localPos = position - Instance.transform.position;
 
         bool hit = false;
-        if (localPos.x > _instance.RectSize.x)
+        if (localPos.x > Instance.RectSize.x)
         {
             hit = true;
-            localPos = new Vector3(localPos.x * -1, localPos.y, localPos.z);
+            localPos = new Vector3(localPos.x * -1 + Instance.Offset, localPos.y, localPos.z);
         }
-        else if (localPos.x < -_instance.RectSize.x)
+        else if (localPos.x < -Instance.RectSize.x)
         {
             hit = true;
-            localPos = new Vector3(localPos.x * -1, localPos.y, localPos.z);
+            localPos = new Vector3(localPos.x * -1 - Instance.Offset, localPos.y, localPos.z);
         }
-        else if(localPos.z > _instance.RectSize.y)
+        else if(localPos.z > Instance.RectSize.y)
         {
             hit = true;
-            localPos = new Vector3(localPos.x, localPos.y, localPos.z * -1);
+            localPos = new Vector3(localPos.x, localPos.y, localPos.z * -1 + Instance.Offset);
         }
-        else if(localPos.z < -_instance.RectSize.y)
+        else if(localPos.z < -Instance.RectSize.y)
         {
             hit = true;
-            localPos = new Vector3(localPos.x , localPos.y, localPos.z * -1);
+            localPos = new Vector3(localPos.x , localPos.y, localPos.z * -1 - Instance.Offset);
         }
 
-        position = _instance.transform.position + localPos;
+        position = Instance.transform.position + localPos;
         return hit;
     }
 
