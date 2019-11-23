@@ -5,10 +5,20 @@ using UnityEngine;
 [RequireComponent(typeof(RotateControl))]
 public class Player : MonoBehaviour
 {
-    public Material BoatMat;
-    public Material MonsterMat;
+
+    public int playerID;
+
+    public Material[] boatMainMats;
+    public Material[] boatBitsMats;
+
+    public Renderer[] mainRenderers;
+    public Renderer[] bitsRenderers;
+
+    public GameObject monster;
+   
 
     private RotateControl _control;
+
     public RotateControl Control
     {
         get
@@ -28,28 +38,41 @@ public class Player : MonoBehaviour
 
     public Color defaultColor;
 
+    private void Awake()
+    {
+        monster.SetActive(false);
+        SetMaterials(boatMainMats[playerID], boatBitsMats[playerID]);
+    }
+
     private void BecomeMonster()
     {
-        SetMaterials(MonsterMat);
+        monster.SetActive(true);
         if (_control != null) _control.Boost = 100;
     }
 
     private void BecomeBoat()
     {
-        SetMaterials(BoatMat);
+        monster.SetActive(false);
+        SetMaterials(boatMainMats[playerID], boatBitsMats[playerID]);
         if (_control != null) _control.Boost = 0;
     }
 
-    private void SetMaterials(Material material)
+    private void SetMaterials(Material mainMaterial, Material bitsMaterial)
     {
         //temp hack
         Renderer[] renderers = GetComponentsInChildren<Renderer>();
-        foreach(Renderer renderer in renderers)
+        foreach(Renderer renderer in mainRenderers)
         {
-            if(!(renderer is TrailRenderer))
-            {
-                renderer.sharedMaterial = material;
-            } 
+
+            renderer.sharedMaterial = mainMaterial;
+
+        }
+
+        foreach (Renderer renderer in bitsRenderers)
+        {
+            
+            renderer.sharedMaterial = bitsMaterial;
+
         }
     }
 
