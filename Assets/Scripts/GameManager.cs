@@ -106,9 +106,9 @@ public class GameManager : MonoBehaviour
 
     IEnumerator Restart()
     {
-        WinMessage.gameObject.SetActive(true);
+		UIController.Won();
 
-        yield return new WaitForSeconds(5);
+        yield return new WaitForSeconds(6);
 
         Scene scene = SceneManager.GetActiveScene();
         SceneManager.LoadScene(scene.name);

@@ -6,6 +6,9 @@ public class UIController : MonoBehaviour
 {
 	public Animator UIControllerAnimator;
 
+	public Animator VictoryAnimator;
+
+
 	public JoinGameUI[] JoinGameUI;
 
     // Start is called before the first frame update
@@ -36,5 +39,10 @@ public class UIController : MonoBehaviour
 	public void AllPlayersReady()
 	{
 		UIControllerAnimator.SetTrigger("PlayersReady");
+	}
+
+	public void Won()
+	{
+		VictoryAnimator.SetTrigger("Win");
 	}
 }
