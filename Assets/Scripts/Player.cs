@@ -125,8 +125,18 @@ public class Player : MonoBehaviour
 		Ghosts = new List<Player>() { GhostTop, GhostBottom, GhostLeft, GhostRight, GhostTopLeft, GhostTopRight, GhostBottomLeft, GhostBottomRight };
 	}
 
+	public bool CheckPlayerInput()
+	{
+		return Input.GetKeyDown(KeyCode);
+	}
+
 	private void CopyGhosts()
 	{
+		if(LevelBounds.Instance == null)
+		{
+			return;
+		}
+
 		float x = LevelBounds.Instance.RectSize.x * 2;
 		float y = LevelBounds.Instance.RectSize.y * 2;
 
@@ -292,7 +302,7 @@ public class Player : MonoBehaviour
 			return;
 		}
 
-        if (Input.GetKeyDown(KeyCode))
+        if (CheckPlayerInput() && GameManager.Instance.State != GameManager.GameState.Attractor)
         {
             Control.Rotate = !Control.Rotate;
         }

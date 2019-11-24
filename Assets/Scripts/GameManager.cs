@@ -34,10 +34,48 @@ public class GameManager : MonoBehaviour
 
 	public float PointSpawnDelay = 5;
 	private float LastSpawnTime = 0;
+
+	public UIController UIController;
+
+	HashSet<int> ReadyPlayers = new HashSet<int>();
+
+	public GameObject LevelAssetRoot;
+
+	public enum GameState
+	{
+		Attractor,
+		Game,
+		Winner
+	}
+
+	private GameState _state;
+	public GameState State
+	{
+		get
+		{ return _state; }
+		set
+		{
+			if(value == GameState.Game)
+			{
+				OnGameStart();
+			}
+
+			_state = value;
+		}
+	}
+
     private void Awake()
     {
         Instance = this;
-    }
+		State = GameState.Attractor;
+
+		foreach (Player player in Players)
+		{
+			player.gameObject.SetActive(false);
+		}
+
+		LevelAssetRoot.SetActive(false);
+	}
 
     public Vector3 GetRespawnPoint()
     {
@@ -76,33 +114,71 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene(scene.name);
     }
 
-    public void Start()
-    {
-        if(Players.Length < 1)
-        {
-            Debug.LogError("No Players!");
-        }
+	 public void OnGameStart()
+	 {
+		LevelAssetRoot.SetActive(true);
 
-        Speed = StartSpeed;
+		foreach (Player player in Players)
+		{
+			player.gameObject.SetActive(true);
+		}
 
-        SpawnNewPoint();
+		if (Players.Length < 1)
+		{
+			Debug.LogError("No Players!");
+		}
 
-        ScoreInstances = new List<Score>();
+		Speed = StartSpeed;
 
-        for(int i = 0; i < Players.Length; i++)
-        {
-            GameObject instance = Instantiate(PlayerScorePrefab);
-            instance.transform.SetParent(PlayerScoreRoot);
-            Score score = instance.GetComponent<Score>();
-            ScoreInstances.Add(score);
+		SpawnNewPoint();
 
-            score.SetPlayer(i+1);
-            score.SetScore(0);
-        }
-    }
+		ScoreInstances = new List<Score>();
+
+		for (int i = 0; i < Players.Length; i++)
+		{
+			GameObject instance = Instantiate(PlayerScorePrefab);
+			instance.transform.SetParent(PlayerScoreRoot);
+			Score score = instance.GetComponent<Score>();
+			ScoreInstances.Add(score);
+
+			score.SetPlayer(i + 1);
+			score.SetScore(0);
+		}
+	}
 
     public void Update()
     {
+		if(State == GameState.Attractor)
+		{
+			for (int i = 0; i < Players.Length; i++)
+			{
+				if (Players[i].CheckPlayerInput())
+				{
+					if(ReadyPlayers.Contains(i))
+					{
+						ReadyPlayers.Remove(i);
+						UIController.PlayerNotReady(i);
+					}
+					else
+					{
+						ReadyPlayers.Add(i);
+						UIController.PlayerReady(i);
+					}
+				}
+			}
+
+			if (ReadyPlayers.Count >= Players.Length)
+			{
+				State = GameState.Game;
+				UIController.AllPlayersReady();
+			}
+		}
+
+		if(State == GameState.Attractor)
+		{
+			return;
+		}
+
         foreach(Player player in Players)
         {
             player.Control.Speed = Speed;

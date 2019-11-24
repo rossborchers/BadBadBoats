@@ -55,3 +55,5 @@
 .sdf filter=lfs diff=lfs merge=lfs -text
 *.manifest filter=lfs diff=lfs merge=lfs -text
 *.assetbundle filter=lfs diff=lfs merge=lfs -text
+/Assets/Fonts/BlackBeardSDF.asset filter=lfs diff=lfs merge=lfs -text
+/Assets/Fonts/PrimitiveSDF.asset filter=lfs diff=lfs merge=lfs -text

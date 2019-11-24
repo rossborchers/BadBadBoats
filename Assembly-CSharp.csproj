@@ -63,19 +63,22 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\BoatTrail.cs" />
-    <Compile Include="Assets\BrokenBoat.cs" />
-    <Compile Include="Assets\Lightning.cs" />
+    <Compile Include="Assets\JoinGameUI.cs" />
+    <Compile Include="Assets\LoopRotate.cs" />
+    <Compile Include="Assets\Scripts\BoatTrail.cs" />
+    <Compile Include="Assets\Scripts\BrokenBoat.cs" />
     <Compile Include="Assets\Scripts\GameManager.cs" />
     <Compile Include="Assets\Scripts\LevelBounds.cs" />
+    <Compile Include="Assets\Scripts\Lightning.cs" />
     <Compile Include="Assets\Scripts\Player.cs" />
     <Compile Include="Assets\Scripts\Point.cs" />
     <Compile Include="Assets\Scripts\RotateControl.cs" />
     <Compile Include="Assets\Scripts\Score.cs" />
     <Compile Include="Assets\Scripts\Spout.cs" />
+    <Compile Include="Assets\Scripts\Wake.cs" />
+    <Compile Include="Assets\Scripts\watermovement.cs" />
     <Compile Include="Assets\Scripts\WhirlPool.cs" />
-    <Compile Include="Assets\Wake.cs" />
-    <Compile Include="Assets\watermovement.cs" />
+    <Compile Include="Assets\UIController.cs" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Surface-Mobile.shader" />
     <None Include="Assets\TextMesh Pro\Resources\LineBreaking Leading Characters.txt" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMPro_Properties.cginc" />
