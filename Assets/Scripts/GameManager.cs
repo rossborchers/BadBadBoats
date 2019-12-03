@@ -14,10 +14,12 @@ public class GameManager : MonoBehaviour
     public GameObject PlayerScorePrefab;
     public Transform PlayerScoreRoot;
 
+	public Animator GrabTheLootAnimator;
+
     private int _pointRespawnIndex;
 
     public Player[] Players;
-    private List<Score> ScoreInstances;
+	private Player activeMonster = null;
 
     private int _respawnIndex;
     public Transform[] Respawns;
@@ -30,10 +32,13 @@ public class GameManager : MonoBehaviour
 
     private float Speed = 0f;
 
-    public int MaxScore = 10;
+	public int ScoreToWin = 4;
+	public Score Score;
 
 	public float PointSpawnDelay = 5;
 	private float LastSpawnTime = 0;
+
+	public AudioSource boatBreakSound;
 
 	public UIController UIController;
 
@@ -75,6 +80,7 @@ public class GameManager : MonoBehaviour
 		}
 
 		LevelAssetRoot.SetActive(false);
+		Score.SetScore(ScoreToWin);
 	}
 
     public Vector3 GetRespawnPoint()
@@ -95,14 +101,14 @@ public class GameManager : MonoBehaviour
 
     public void PlayerKilledOther(Player killer)
     {
-        for (int i = 0; i < Players.Length; i++)
-        {
-            if (Players[i] == killer)
-            {
-                ScoreInstances[i].IncrementScore();
-            }
-        }
-    }
+		boatBreakSound.Play();
+
+		Score.SetScore(Score.CurrentScore-1);
+		if(Score.CurrentScore > 0)
+		{
+			Score.Show(false);
+		}
+	}
 
     IEnumerator Restart()
     {
@@ -132,18 +138,8 @@ public class GameManager : MonoBehaviour
 
 		SpawnNewPoint();
 
-		ScoreInstances = new List<Score>();
 
-		for (int i = 0; i < Players.Length; i++)
-		{
-			GameObject instance = Instantiate(PlayerScorePrefab);
-			instance.transform.SetParent(PlayerScoreRoot);
-			Score score = instance.GetComponent<Score>();
-			ScoreInstances.Add(score);
-
-			score.SetPlayer(i + 1);
-			score.SetScore(0);
-		}
+		GrabTheLootAnimator.SetTrigger("On");
 	}
 
     public void Update()
@@ -184,14 +180,11 @@ public class GameManager : MonoBehaviour
             player.Control.Speed = Speed;
         }
 
-        for(int i = 0; i < ScoreInstances.Count; i++)
+        if(Score.CurrentScore == 0)
         {
-            if( ScoreInstances[i].CurrentScore >= MaxScore)
-            {
-                StartCoroutine(Restart());
-            }
+            StartCoroutine(Restart());
         }
-
+        
         int points = 0;
         foreach(Point p in FindObjectsOfType<Point>())
         {
@@ -214,7 +207,15 @@ public class GameManager : MonoBehaviour
 
     public void PlayerGotPoint(Player newPlayer)
     {
-        for ( int i = 0; i < Players.Length; i++)
+		if(activeMonster != newPlayer)
+		{
+			Score.SetScore(ScoreToWin);
+			Score.Show(true);
+		}
+
+		activeMonster = newPlayer;
+
+		for ( int i = 0; i < Players.Length; i++)
         {
             if (Players[i] != newPlayer)
             {

@@ -12,9 +12,11 @@ public class Lightning : MonoBehaviour
 
 	public float DecreaseSpeed = 50;
 
-    // Start is called before the first frame update
-    void Start()
-    {
+	public AudioSource[] Thunders;
+
+	// Start is called before the first frame update
+	void Start()
+	{
 		light = GetComponent<Light>();
 		Instance = this;
 	}
@@ -22,6 +24,26 @@ public class Lightning : MonoBehaviour
 	public void Strike()
 	{
 		light.intensity = Intensity;
+		StartCoroutine(ThunderStrike());
+	}
+
+	IEnumerator ThunderStrike()
+	{
+		yield return new WaitForSeconds(UnityEngine.Random.Range(0, 1f));
+
+		bool thunderPlaying = false;
+		foreach(AudioSource s in Thunders)
+		{
+			if(s.isPlaying)
+			{
+				thunderPlaying = true;
+			}
+		}
+
+		if(!thunderPlaying)
+		{
+			Thunders[UnityEngine.Random.Range(0, Thunders.Length)].Play();
+		}
 	}
 
     void Update()

@@ -4,21 +4,34 @@ using UnityEngine;
 
 public class Score : MonoBehaviour
 {
+	public Animator ScoreAnimator;
+
     public TMPro.TextMeshProUGUI playerText;
     public TMPro.TextMeshProUGUI scoreText;
 
-    private int _score = 0;
+	public CanvasGroup TablesTurnedCanvasGroup;
 
-    public void SetPlayer(int player)
-    {
-        playerText.text = "Player " + player;
-    }
+    private int _score = 0;
 
     public void SetScore(int score)
     {
         _score = score;
         scoreText.text = "" + score;
     }
+
+	public void Show(bool tablesTurned)
+	{
+		if(tablesTurned)
+		{
+			TablesTurnedCanvasGroup.alpha = 1;
+		}
+		else
+		{
+			TablesTurnedCanvasGroup.alpha = 0;
+		}
+
+		ScoreAnimator.SetTrigger("Show");
+	}
 
     public int CurrentScore
     {

@@ -55,7 +55,6 @@ public class RotateControl : MonoBehaviour
 		set;
 	}
 
-
 	private float direction = 1;
 
     public void ChangeDirection()
@@ -69,7 +68,6 @@ public class RotateControl : MonoBehaviour
         {
 			// transform.RotateAround(rotate1.position, Vector3.up, direction * (Speed + Boost + TrailBoost + GotPointBoost) * Time.deltaTime);
 			RotateRigidBodyAroundPointBy(Rigidbody, rotate1.position, Vector3.up , direction * (Speed + Boost + TrailBoost + GotPointBoost) * Time.fixedDeltaTime);
-
 		}
         else
         {
