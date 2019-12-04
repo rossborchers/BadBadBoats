@@ -46,6 +46,15 @@ public class GameManager : MonoBehaviour
 
 	public GameObject LevelAssetRoot;
 
+
+	public float TimeoutTime;
+	private float _currentTimeoutTime;
+	private bool restarting;
+
+
+	public float TimeToReset;
+	private float _resetTime;
+
 	public enum GameState
 	{
 		Attractor,
@@ -110,14 +119,23 @@ public class GameManager : MonoBehaviour
 		}
 	}
 
-    IEnumerator Restart()
+    IEnumerator Restart(bool showWin = true)
     {
-		UIController.Won();
+		if (!restarting)
+		{
+			restarting = true;
+			if(showWin)
+			{
+				UIController.Won();
+				yield return new WaitForSeconds(6);
 
-        yield return new WaitForSeconds(6);
+			}
 
-        Scene scene = SceneManager.GetActiveScene();
-        SceneManager.LoadScene(scene.name);
+			Scene scene = SceneManager.GetActiveScene();
+			restarting = false;
+			SceneManager.LoadScene(scene.name);
+		}
+		
     }
 
 	 public void OnGameStart()
@@ -175,7 +193,38 @@ public class GameManager : MonoBehaviour
 			return;
 		}
 
-        foreach(Player player in Players)
+		if (!Input.anyKey)
+		{
+			_currentTimeoutTime+=Time.deltaTime;
+		}
+		if(_currentTimeoutTime > TimeoutTime)
+		{
+			StartCoroutine(Restart(false));
+		}
+
+		int down = 0;
+		foreach(Player p in Players)
+		{
+			if(Input.GetKey(p.KeyCode))
+			{
+				down++;
+			}
+		}
+
+		if(down == Players.Length)
+		{
+			_resetTime += Time.deltaTime;
+			if(_resetTime > TimeToReset)
+			{
+				StartCoroutine(Restart(false));
+			}
+		}
+		else
+		{
+			_resetTime = 0;
+		}
+
+		foreach (Player player in Players)
         {
             player.Control.Speed = Speed;
         }

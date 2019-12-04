@@ -13035,6 +13035,8 @@ MonoBehaviour:
   boatBreakSound: {fileID: 1967980840}
   UIController: {fileID: 2043186841}
   LevelAssetRoot: {fileID: 1301998958}
+  TimeoutTime: 30
+  TimeToReset: 5
 --- !u!4 &1967980839
 Transform:
   m_ObjectHideFlags: 0

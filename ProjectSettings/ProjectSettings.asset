@@ -12,7 +12,7 @@ PlayerSettings:
   targetDevice: 2
   useOnDemandResources: 0
   accelerometerFrequency: 60
-  companyName: Boats4Lyf
+  companyName: Bad Bad Company
   productName: Bad Bad Boats
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
