@@ -197,6 +197,11 @@ public class GameManager : MonoBehaviour
 		{
 			_currentTimeoutTime+=Time.deltaTime;
 		}
+		else
+		{
+			_currentTimeoutTime = 0;
+		}
+
 		if(_currentTimeoutTime > TimeoutTime)
 		{
 			StartCoroutine(Restart(false));
